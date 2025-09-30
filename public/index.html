@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chatbot with Connect</title>
+  <script src="https://unpkg.com/amazon-connect-streams@2.19.0"></script>
+  <script>
+    window.addEventListener('load', function() {
+      if (!window.connect) {
+        console.error('Amazon Connect Streams API failed to load');
+      } else {
+        console.log('Amazon Connect Streams API loaded successfully');
+      }
+    });
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+</body>
+</html>
