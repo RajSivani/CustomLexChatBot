@@ -1,3 +1,6 @@
+/* *{
+  font-family:  sans-serif !important;
+} */
 .chatbot-div {
   display: flex;
   justify-content: end;
@@ -11,7 +14,7 @@
   display: flex;
   flex-direction: column;
   height: 50vh;
-  width: 450px;
+  width: 350px;
   border-radius: 10px;
   border: 1px solid #444c6b;
   background-color: #1e223d;
@@ -31,11 +34,12 @@
 
 .chat-form {
   display: flex;
-  gap: 10px;
+  /* gap: 10px; */
   padding: 12px;
   border-top: 1px solid #eee;
   position: sticky;
   bottom: 0;
+  align-items: center;
 }
 
 /* Input styling */
@@ -66,14 +70,18 @@
 }
 
 .send-button {
-  color: #e8663d;
+  color: #e8663d !important;
   width: 40px;
   height: 25px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: transparent;
+  border: 0;
 }
-
+.send-button:hover{
+  padding-bottom: 0px;
+}
 .user-msg {
   align-self: flex-end;
   background-color: rgb(232, 102, 61);
@@ -123,7 +131,7 @@
 }
 
 .card-title {
-  font-weight: bold;
+  font-weight:500;
 }
 
 .card-subtitle {
@@ -173,4 +181,39 @@ body {
 }
 .chat-close-option :hover{
   color: #FFFFFF;
+}
+::-webkit-scrollbar {
+  width: 2px;
+
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: transparent; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(200, 85, 50);; 
+}
+.options{
+  display: flex;
+  background-color: transparent;
+  border: 0;
+  justify-content: flex-end;
+  padding-bottom: 10px;
+  padding-top: 10px;
+}.bot-msg a {
+  color:  #ff6600;;  
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.bot-msg a:hover {
+  color: white;  
 }

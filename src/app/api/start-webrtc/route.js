@@ -1,40 +1,61 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { ConnectClient, StartWebRTCContactCommand } from '@aws-sdk/client-connect';
+// import { activeCalls, notifyAgents } from '../utils/callManager';
+
+const connectClient = new ConnectClient({
+  region: process.env.AWS_REGION || 'us-west-2',
+  credentials: {
+    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
+  },
+});
 
 export async function POST(request) {
+  console.log('🚀 Customer initiating call');
+  
   try {
-    const body = await request.json();
-    const { attributes } = body;
-
-    const client = new ConnectClient({
-      region: process.env.NEXT_PUBLIC_AWS_REGION || 'us-west-2',
-      credentials: {
-        accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
-      },
-    });
+    const { attributes } = await request.json();
 
     const command = new StartWebRTCContactCommand({
-      InstanceId: process.env.NEXT_PUBLIC_CONNECT_INSTANCE_ID || '564ddef5-1ce1-4d8d-abf9-0875eeec654c',
-      ContactFlowId: process.env.NEXT_PUBLIC_CONNECT_CONTACT_FLOW_ID || '4a39d555-5bc8-4ffb-b63c-b3a320739d62',
+      InstanceId: process.env.NEXT_PUBLIC_CONNECT_INSTANCE_ID,
+      ContactFlowId: process.env.NEXT_PUBLIC_CONNECT_CONTACT_FLOW_ID,
       ParticipantDetails: {
-        DisplayName: attributes?.userName || 'Chatbot User',
+        DisplayName: attributes?.userName || 'Customer',
       },
       Attributes: attributes || {},
     });
 
-    const response = await client.send(command);
-    return NextResponse.json({
+    console.log('📞 Calling AWS Connect...');
+    const response = await connectClient.send(command);
+
+    const contactId = response.ContactId;
+    console.log(`✅ Contact created: ${contactId}`);
+
+    // Store meeting data
+    // activeCalls.set(contactId, {
+    //   connectionData: response.ConnectionData,
+    //   createdAt: new Date().toISOString(),
+    //   customerJoined: true,
+    //   agentJoined: false,
+    // });
+
+    // // Notify agents via WebSocket
+    // notifyAgents(contactId);
+
+    return Response.json({
       success: true,
-      connectionData: response.ConnectionData,
-      contactId: response.ContactId,
+      contactId,
+      connectionData: {
+        Meeting: response.ConnectionData.Meeting,
+        Attendee: response.ConnectionData.Attendee,
+      },
     });
+
   } catch (error) {
-    console.error('StartWebRTCContact error:', error);
-    let message = 'Failed to initiate call. Please try again.';
-    if (error.name === 'ResourceNotFoundException' || error.message.includes('capacity')) {
-      message = 'Agents are full. We will call you back.';
-    }
-    return NextResponse.json({ success: false, error: message }, { status: 500 });
+    console.error('❌ Error starting WebRTC:', error);
+    return Response.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
   }
 }
+
